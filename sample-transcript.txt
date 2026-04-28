@@ -1,0 +1,9 @@
+Ama: Okay, let’s get started. The goal today is to check our progress for the Phase 1 launch. Yaw, where are we with the landing page mockups?
+Yaw: The desktop versions are 100% complete. I’m still tweaking the mobile responsiveness for the contact form, but I should have that wrapped up by end of day. I do need the final brand color codes from Marketing, though.
+Ama: I’ll ping the Marketing team right after this call to get those hex codes for you. Abena, how is the backend integration coming along?
+Abena: The API is connected, and we’ve successfully tested the data flow. However, I’ve run into a slight bug with the user authentication module. It’s adding about a two-second delay to the login process.
+Ama: Is that a dealbreaker for the Friday beta?
+Abena: No, it’s functional, just not optimized. I can have a fix pushed by Thursday morning.
+Ama: Good. Let’s keep that on the schedule. Yaw, once you get those colors, please update the Figma file so Abena can pull the final CSS.
+Yaw: Sounds like a plan.
+Ama: Perfect. That’s all I had. Thanks, everyone.
