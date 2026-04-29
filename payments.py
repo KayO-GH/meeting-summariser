@@ -11,10 +11,9 @@ TOPUP_CREDITS = 5
 TOPUP_AMOUNT_GHS = 10.0
 PAYSTACK_BASE = "https://api.paystack.co"
 
-
+# TODO: #1 add the authorization header
 def _headers() -> dict:
   return {
-    "Authorization": f"Bearer {os.environ['PAYSTACK_SECRET_KEY']}",
     "Content-Type": "application/json",
   }
 
@@ -47,29 +46,16 @@ def make_reference(email: str) -> str:
   return f"vtt-{h}-{int(time.time())}"
 
 
+#TODO: #2 - call the initialize endpoint and return the data object
 def initialize_payment(email: str) -> dict:
-  reference = make_reference(email)
-  resp = requests.post(
-    f"{PAYSTACK_BASE}/transaction/initialize",
-    headers=_headers(),
-    json={
-      "email": email,
-      "amount": int(TOPUP_AMOUNT_GHS * 100),
-      "currency": "GHS",
-      "reference": reference,
-    },
-  )
-  return resp.json()["data"]
 
+  return {}
 
+# TODO: #3 - call the verify endpoint with the reference to confirm the transaction
+# Call the top_up function with the email and data object
 def verify(email: str, reference: str) -> tuple[bool, str]:
-  resp = requests.get(
-    f"{PAYSTACK_BASE}/transaction/verify/{reference}",
-    headers=_headers(),
-  )
-  data = resp.json().get("data", {})
 
-  return top_up(email, data)
+  return []
   
 
 def top_up(email: str, data: dict) -> tuple[bool, str]:
