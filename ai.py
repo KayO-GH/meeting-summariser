@@ -6,7 +6,7 @@ load_dotenv()
 
  # TODO: #1 Set up the client using the API key from Google AI Studio
  # use genai.Client
-client = genai.Client(api_key=os.getenv("GOOGLE_AI_STUDIO_KEY"))
+client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
 # TODO: #2 Include the prompt that sets the persona of the model and its task
 SYSTEM_PROMPT = """
