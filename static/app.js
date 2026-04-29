@@ -1,6 +1,43 @@
 let isRecording = false;
 let finalTranscript = '';
 let recognition = null;
+let currentEmail = '';
+
+// ── Account ───────────────────────────────────────────────────────────────────
+
+async function loadAccount() {
+  const email = document.getElementById('emailInput').value.trim().toLowerCase();
+  if (!email || !email.includes('@')) {
+    showNotice('emailNotice', 'Enter a valid email address.', 'error');
+    return;
+  }
+  currentEmail = email;
+  hide('emailNotice');
+  const res = await fetch('/credits?email=' + encodeURIComponent(email));
+  const data = await res.json();
+  updateCredits(data.credits);
+  document.getElementById('appSection').classList.remove('hidden');
+  document.getElementById('accountPill').classList.remove('hidden');
+  document.getElementById('accountEmail').textContent = email;
+}
+
+function updateCredits(credits) {
+  const badge = document.getElementById('creditBadge');
+  badge.textContent = credits + ' credit' + (credits !== 1 ? 's' : '');
+  badge.className = credits > 0 ? 'credit-badge' : 'credit-badge empty';
+
+  const summariseBtn = document.getElementById('summariseBtn');
+  const topupCard = document.getElementById('topupCard');
+
+  if (credits <= 0) {
+    topupCard.classList.remove('hidden');
+  } else {
+    topupCard.classList.add('hidden');
+  }
+  refreshSummariseBtn();
+}
+
+// ── Recording ─────────────────────────────────────────────────────────────────
 
 function initRecognition() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -90,6 +127,7 @@ function clearAll() {
   document.getElementById('statusPill').classList.add('hidden');
 }
 
+// ── Summarise ─────────────────────────────────────────────────────────────────
 
 async function requestSummary() {
   const transcript = finalTranscript.trim();
@@ -105,14 +143,14 @@ async function requestSummary() {
   const res = await fetch('/summarise', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ transcript }),
+    body: JSON.stringify({ email: currentEmail, transcript }),
   });
   const data = await res.json();
   btn.innerHTML = '✦ Summarise';
 
   if (!res.ok) {
     if (res.status === 402) {
-      console.log("ERROR to be handled")
+      updateCredits(0);
     } else {
       btn.disabled = false;
       showNotice('transcriptNotice', data.detail || 'Something went wrong.', 'error');
@@ -124,7 +162,52 @@ async function requestSummary() {
   document.getElementById('summaryBox').innerHTML = renderMarkdown(data.summary);
   summaryCard.classList.remove('hidden');
   summaryCard.scrollIntoView({ behavior: 'smooth' });
+
+  const credRes = await fetch('/credits?email=' + encodeURIComponent(currentEmail));
+  const credData = await credRes.json();
+  updateCredits(credData.credits);
 }
+
+// ── Payment ───────────────────────────────────────────────────────────────────
+
+async function initPayment() {
+  const btn = document.getElementById('payBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Creating link...';
+  const res = await fetch('/payment/initialize', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: currentEmail }),
+  });
+  const data = await res.json();
+  btn.innerHTML = 'Generate payment link';
+  btn.disabled = false;
+  if (!res.ok) { showNotice('topupNotice', data.detail || 'Could not create link.', 'error'); return; }
+  document.getElementById('payAnchor').href = data.authorization_url;
+  document.getElementById('refInput').value = data.reference;
+  document.getElementById('payLink').classList.remove('hidden');
+}
+
+async function verifyPayment() {
+  const ref = document.getElementById('refInput').value.trim();
+  if (!ref) { showNotice('topupNotice', 'Reference not yet generated.', 'error'); return; }
+  const res = await fetch('/payment/verify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: currentEmail, reference: ref }),
+  });
+  const data = await res.json();
+  if (data.success) {
+    showNotice('topupNotice', data.message, 'success');
+    document.getElementById('refInput').value = '';
+    document.getElementById('payLink').classList.add('hidden');
+    updateCredits(data.credits);
+  } else {
+    showNotice('topupNotice', data.message, 'error');
+  }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function refreshSummariseBtn() {
   const hasCredits = !document.getElementById('creditBadge').classList.contains('empty');
