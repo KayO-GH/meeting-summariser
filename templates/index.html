@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoiceToText</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">Voice<span>ToText</span></div>
+    <div class="header-right">
+      <div class="status-pill hidden" id="statusPill">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusLabel">Idle</span>
+      </div>
+      <div class="account-pill hidden" id="accountPill">
+        <span id="accountEmail"></span>
+        <span class="credit-badge" id="creditBadge"></span>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="card" id="accountCard">
+      <div class="card-label">Your account</div>
+      <div class="input-row">
+        <input type="email" id="emailInput" placeholder="you@example.com" autocomplete="email" />
+        <button class="btn-primary" onclick="loadAccount()">Get started</button>
+      </div>
+      <p class="hint" style="margin-top: 0.75rem;">New accounts start with 2 free summaries. No card required.</p>
+      <div id="emailNotice" class="notice error hidden" style="margin-top: 0.75rem;"></div>
+    </div>
+    <div id="appSection" class="hidden">
+      <div class="card" id="recordCard">
+        <div class="card-label">Record your voice</div>
+        <p class="hint">Click <strong>Start recording</strong> and speak. Your words will appear below as you talk.</p>
+        <div class="button-row" style="margin-top: 1rem;">
+          <button class="btn-primary" id="recordBtn" onclick="toggleRecording()">
+            <span class="mic-icon">🎙</span> Start recording
+          </button>
+          <button class="btn-secondary" id="clearBtn" onclick="clearAll()" disabled>Clear</button>
+        </div>
+      </div>
+      <div class="card" id="transcriptCard">
+        <div class="card-label">Transcript</div>
+        <div class="transcript-box" id="transcriptBox">
+          <span class="placeholder">Your transcript will appear here as you speak...</span>
+        </div>
+        <div style="margin-top: 1rem;">
+          <button class="btn-primary" id="summariseBtn" onclick="requestSummary()" disabled>
+            ✦ Summarise
+          </button>
+        </div>
+        <div id="transcriptNotice" class="notice hidden" style="margin-top: 0.75rem;"></div>
+      </div>
+      <div class="card hidden" id="summaryCard">
+        <div class="card-label">Summary</div>
+        <div class="summary-box" id="summaryBox"></div>
+      </div>
+      <div class="card hidden" id="topupCard">
+        <div class="card-label">Top up credits</div>
+        <p class="hint" style="margin-bottom: 1rem;">
+          Buy <strong>5 credits</strong> for <strong>GHS 10</strong> to keep summarising.
+          Pay by card or Mobile Money via Paystack.
+        </p>
+        <button class="btn-primary" id="payBtn" onclick="initPayment()" style="margin-bottom: 1rem;">
+          Generate payment link
+        </button>
+        <div id="payLink" class="hidden" style="margin-bottom: 1rem;">
+          <a id="payAnchor" href="#" target="_blank" rel="noopener" style="display:block;text-decoration:none;">
+            <button class="btn-primary green" type="button">Pay now (opens Paystack)</button>
+          </a>
+          <p class="hint" style="margin-top: 0.6rem;">
+            Complete the payment, then come back and click <strong>Verify payment</strong>.
+          </p>
+        </div>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+          <input type="text" id="refInput" placeholder="Reference auto-filled after link is generated" readonly
+            style="flex:1;min-width:200px;opacity:0.7;" />
+          <button class="btn-secondary" onclick="verifyPayment()" style="flex-shrink:0;">Verify payment</button>
+        </div>
+        <div id="topupNotice" class="notice hidden" style="margin-top: 0.75rem;"></div>
+      </div>
+    </div>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>
