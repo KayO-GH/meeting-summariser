@@ -11,7 +11,7 @@ from payments import (
   get_credits,
   deduct_credit,
   initialize_payment,
-  verify,
+  verify_payment,
 )
 
 load_dotenv()
@@ -73,6 +73,6 @@ class PaymentVerifyRequest(BaseModel):
 
 @app.post("/payment/verify")
 async def payment_verify(body: PaymentVerifyRequest):
-  success, message = verify(body.email, body.reference)
+  success, message = verify_payment(body.email, body.reference)
   credits = get_credits(body.email)
   return {"success": success, "message": message, "credits": credits}

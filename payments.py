@@ -53,7 +53,7 @@ def initialize_payment(email: str) -> dict:
 
 # TODO: #3 - call the verify endpoint with the reference to confirm the transaction
 # Call the top_up function with the email and data object
-def verify(email: str, reference: str) -> tuple[bool, str]:
+def verify_payment(email: str, reference: str) -> tuple[bool, str]:
 
   return []
   
